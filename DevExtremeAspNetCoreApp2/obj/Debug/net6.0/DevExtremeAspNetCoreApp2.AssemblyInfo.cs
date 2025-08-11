@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DevExtremeAspNetCoreApp2")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+864b431431c66a0715c2086bb069f0f749201938")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+64947d4dd5eebc05c14a1f9a629f2824cac34143")]
 [assembly: System.Reflection.AssemblyProductAttribute("DevExtremeAspNetCoreApp2")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DevExtremeAspNetCoreApp2")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
