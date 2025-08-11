@@ -63,7 +63,7 @@
 
 <!-- DevExtreme JS -->
 @* <script src="https://cdn3.devexpress.com/jslib/22.2.15/js/dx.all.js"></script> *@
-<script src="~/js/devextreme/dx.all.js"></script>
+    <script src="~/js/devextreme/dx.all.js" defer></script>
 
 <style>
         /* Optional: Custom styling to match your theme */
@@ -1149,9 +1149,13 @@
         background-color: RGBA(238, 237, 248, 1);
     }
 
-    .dx-device-generic {
+    /* .dx-device-generic {
         background-color: RGBA(238, 237, 248, 1);
-    }
+    } */
+
+        .dx-device-generic {
+            background-color: black;
+        }
 
     .dx-toolbar-items-container {
         background-color: RGBA(238, 237, 248, 1);

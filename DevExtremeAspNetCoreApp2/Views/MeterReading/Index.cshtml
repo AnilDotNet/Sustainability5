@@ -44,10 +44,11 @@
                     <div style="width:300px;height:30px;margin-left: 28px;" id="OfficeID"></div>
                 </div>
                 <div>
-                    <label  >Location:</label>
+                    <label>Location:</label>
                     @* <div style="width:300px;height:30px;margin-left: 28px;" id="OfficeID"></div> *@
-                    <input type="text" id="Location">
-                    <label  >Vision Headcount:</label>
+                    @* <input type="text" id="Location"> *@
+                    <label id="Location"></label>
+                    <label>Vision Headcount:</label>
                     <div style="width:300px;height:30px;margin-left: 28px;" id="VisionHeadCount"></div>
                     <label>ADP Headcount:</label>
                     <div style="width:300px;height:30px;margin-left: 28px;" id="ADPHeadCount"></div>
@@ -55,7 +56,7 @@
             </div>
             <br />
             <div class="card-boxContainer" style="display:none" id="gridShadow">
-                <div style="height:100px;width:fit-content" id="gridContainer"></div>
+                <div style="height:387px;width:fit-content" id="gridContainer"></div>
             </div>
         </div>
     </main>
@@ -67,12 +68,14 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- DevExtreme CSS -->
-    @* <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/22.2.15/css/dx.light.css" /> *@
+
     <link href="~/css/devextreme/dx.light.css" rel="stylesheet" />
 
     <!-- DevExtreme JS -->
-    @* <script src="https://cdn3.devexpress.com/jslib/22.2.15/js/dx.all.js"></script> *@
-    <script src="~/js/devextreme/dx.all.js"></script>
+
+    <script src="~/js/devextreme/dx.all.js" defer></script>
+    @* <script src="https://cdn3.devexpress.com/jslib/22.2.6/js/dx.all.js" defer></script> *@
+
 
     <style>
         /* Optional: Custom styling to match your theme */
@@ -118,13 +121,13 @@
         }
 
         /* .card-box {
-                    background-color: white;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-                    padding: 20px;
-                    border: 1px solid rgba(0, 0, 0, 0.04);
-                    height:800px;
-                } */
+                            background-color: white;
+                            border-radius: 8px;
+                            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+                            padding: 20px;
+                            border: 1px solid rgba(0, 0, 0, 0.04);
+                            height:800px;
+                        } */
 
         h3 {
             margin-top: -10px;
@@ -142,7 +145,7 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); /* soft outer shadow */
             padding: 20px;
             border: 1px solid rgba(0, 0, 0, 0.04); /* light border */
-            height: 500px !important;
+            height: 630px !important;
             margin-left: 30px;
             margin-right: 30px;
         }
@@ -154,7 +157,7 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); /* soft outer shadow */
             padding: 20px;
             border: 1px solid rgba(0, 0, 0, 0.04); /* light border */
-            height: 250px !important;
+            height: 430px !important;
             margin-left: 30px;
             margin-right: 30px;
         }
@@ -248,10 +251,10 @@
         }
 
         /* .main-container {
-                padding: 30px;
-                background-color:white;
-                height:900px;
-            } */
+                        padding: 30px;
+                        background-color:white;
+                        height:900px;
+                    } */
 
         .main-container {
             padding: 30px;
@@ -384,25 +387,30 @@
                              debugger;
                              const officeID = e.value;
                               currentOfficeID = e.value;
-                             //            if (!currentOfficeID) {
-                             //                $("#gridContainer").hide();
-                             //                return;
-                             //            }
-                             //            $("#gridContainer").show();
-                             //            loadOfficeDetails(currentOfficeID);
-                             //alert(officeID);
+
                     console.log("Selected Office ID:", e.value);
                     //document.getElementById("gridContainer").style.display = "block";
 
                      $.ajax({
-                url: "/Home/GetOfficeDetails",
+                url: "/MeterReading/GetMeterReadingInfo",
                 method: "POST",
                 data: { OfficeID: officeID },
                 success: function (details) {
+                    console.log("details from server:", details);
 
-                      console.log("Office Details:", details);
-                      console.log("fullAddress:", details.City;
-                      console.log("officeID:", officeID);
+                            let locationValue = details[0].OHPhase + "-" +
+                            details[0].OfficeID + "-" +
+                            details[0].AddressLine1 + ", " +
+                            details[0].City;
+
+        //document.getElementById("Location").value = locationValue;
+        // or
+        //$("#Location").val(locationValue);
+         document.getElementById("Location").innerText =
+            `${details[0].OHPhase}-${details[0].OfficeID}-${details[0].AddressLine1}, ${details[0].City}`;
+
+                      //console.log("First Office City:", details[0].City);
+                      //$("#Location").val(details[0].City);
                       //Location
                       //document.getElementById("Location").value = fullAddress;
 
@@ -442,281 +450,59 @@
                 },
                                                     columns: [
                                                                              {
-                dataField: "OfficeID",
-                caption: "Office ID",
-                width: 100,
+                dataField: "Invoice",
+                caption: "Invoice",
+                width: 120,
                 allowEditing: false,
                 cellTemplate: function (container, options) {
                     $("<a>")
-                        .text(options.data.OfficeID)
+                        .text(options.data.Invoice)
                         .attr("href", "javascript:void(0);")
                         .on("click", function () {
                             // your edit logic or redirect here
-                            editOffice(options.data.OfficeID);
+                            editOffice(options.data.Invoice);
                         })
                         .appendTo(container);
                 }
             },
 
-            { dataField: "OHPhase", caption: "OH Phase",width:95 },
-            { dataField: "OHPhase2", caption: "OH Phase 2",width:105 },
-            { dataField: "OHPhase3", caption: "OH Phase 3",width:70, visible: false },
-            { dataField: "OHPhase4", caption: "OH Phase 4",width:70, visible: false },
+            { dataField: "UtilityMeterReadingID", caption: "OH Phase",width:95, visible: false },
+            { dataField: "UtilityMeterID", caption: "OH Phase 2",width:105, visible: false },
+            { dataField: "OfficeLocationID", caption: "OH Phase 4",width:70, visible: false },
+            { dataField: "MeterNumber", caption: "MeterNumber",width:100},
+            { dataField: "OfficeID", caption: "Vision HC", dataType: "number",width:70 , visible: false},
+            { dataField: "SD", caption: "ADP HC", dataType: "number",width:70, visible: false },
+
+             { dataField: "ED", caption: "Comments",width:70, visible: false },
+                     { dataField: "StartDate", caption: "Start Date", width: 100, dataType: "date", format: "MM-dd-yyyy" },
+        { dataField: "EndDate", caption: "End Date", width: 100, dataType: "date", format: "MM-dd-yyyy" },
+            { dataField: "NumberOfDays", caption: "Recycle Cans",width:70, visible: false},
+            { dataField: "FiscalMonth", caption: "FiscalMonth",width:70},
+             { dataField: "FiscalYear", caption: "FiscalYear",width:70 },
+
+            { dataField: "UnitsUsed", caption: "UnitsUsed",width:70 },
+            { dataField: "UTLProviderType", caption: "Address Line 2",width:70, visible: false },
+            { dataField: "UOM", caption: "UOM",width:70 },
+            { dataField: "Cost", caption: "City",width:70 , visible: false},
+            { dataField: "Therms", caption: "State/Province",width:100, visible: false },
+            { dataField: "GHGEmissions", caption: "Postal Code",width:100 , visible: false},
+            { dataField: "Comments", caption: "Country",width:100, visible: false },
+
+            { dataField: "PeriodHeadcountOnFile", caption: "STATUS",width:70, visible: false },
+            { dataField: "IsPastCloseDate", caption: "Primary Function",width:70, visible: false },
+            { dataField: "ModifiedDate", caption: "Heating Fuel",width:70, visible: false },
+
+            { dataField: "ModifiedBy", caption: "Year Built", dataType: "number",width:70 , visible: false},
+                { dataField: "UnitsUsedGJ", caption: "Net Office SF", dataType: "number",width:70 , visible: false}
 
 
-             { dataField: "VisionCode", caption: "Vision Code",width:110 },
-            { dataField: "ADPWorkCode", caption: "ADP Work Code",width:70,visible: false},
-            { dataField: "VisionHeadCount", caption: "Vision HC", dataType: "number",width:70 , visible: false},
-            { dataField: "AdpHeadCount", caption: "ADP HC", dataType: "number",width:70, visible: false },
-
-             { dataField: "Comments", caption: "Comments",width:70, visible: false },
-             { dataField: "RecyclePlastic", caption: "Recycle Plastic",width:70, visible: false
-                    , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                    },
-            { dataField: "RecycleGlass", caption: "Recycle Glass",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "RecycleAluminumCans", caption: "Recycle Cans",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "RecycleCardboard", caption: "Recycle Cardboard",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "RecycleBatteries", caption: "Recycle Batteries" ,width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "RecycleEWaste", caption: "Recycle E-Waste",width:70, visible: false
-                                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "RecycleCompost", caption: "Recycle Compost",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-
-            { dataField: "WaterData", caption: "Water Data",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EarthDay", caption: "Earth Day",width:70, visible: false },
-
-            { dataField: "EnergyThermostats", caption: "Energy: Thermostats",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyStarAppliances", caption: "Energy: Star Appliances",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyBanSpaceHeaters", caption: "Energy: Ban Heaters",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyCopiersAutoOff", caption: "Energy: Auto-Off Copiers",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyLED_Lighting", caption: "Energy: LED",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyMotionLighting", caption: "Energy: Motion Lights",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyEV_Chargers", caption: "Energy: EV Chargers",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergySolarOnsite", caption: "Energy: Solar Onsite",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-
-            // { dataField: "LastSurveyDate", caption: "Last Survey Date",width:70 },
-
-            { dataField: "AddressLine1", caption: "Address",width:200 },
-            { dataField: "AddressLine2", caption: "Address Line 2",width:70, visible: false },
-            { dataField: "AddressLine3", caption: "Address Line 3",width:70, visible: false },
-            { dataField: "City", caption: "City",width:70 },
-            { dataField: "StateProvince", caption: "State/Province",width:100 },
-            { dataField: "PostalCode", caption: "Postal Code",width:100 },
-            { dataField: "Country", caption: "Country",width:100 },
-
-            { dataField: "STATUS", caption: "STATUS",width:70 },
-            { dataField: "PrimFun", caption: "Primary Function",width:70 },
-            { dataField: "HtgFuel", caption: "Heating Fuel",width:70, visible: false },
-
-            { dataField: "YearBuilt", caption: "Year Built", dataType: "number",width:70 , visible: false},
-                { dataField: "NetOfficeSF", caption: "Net Office SF", dataType: "number",width:70 , visible: false},
-                { dataField: "ClimateZone", caption: "Climate Zone",width:70, visible: false },
-            { dataField: "eGRIDSubregion", caption: "EGRID Subregion",width:70, visible: false },
-                { dataField: "WarehouseSF", caption: "Warehouse SF", dataType: "number",width:70 , visible: false},
-                { dataField: "OfficeSF", caption: "Office SF", dataType: "number",width:70, visible: false },
-
-            // { dataField: "LeaseCommenceDate", caption: "Lease Start", dataType: "date",width:70 },
-            // { dataField: "LeaseTermDate", caption: "Lease Term", dataType: "date",width:70 },
-            // { dataField: "LeaseExpirationDate", caption: "Lease End", dataType: "date",width:70 },
-
-            { dataField: "Acquisition", caption: "Acquisition Type",width:70, visible: false },
-            { dataField: "Comments1", caption: "Additional Comments",width:70, visible: false },
-            { dataField: "EstimateElectricUsage", caption: "Electric Usage Estimate",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EstimateGasUsage", caption: "Gas Usage Estimate",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-                { dataField: "EnergyDataSource", caption: "Energy Data Source",width:70 , visible: false}
                                                     ],
                                                     showBorders: true,
                                                     searchPanel: { visible: true },
                                                     paging: { pageSize: 10 },
 
                                                         // Enable editing
-        //     editing: {
-        //         mode: "popup",
-        //         // or "form", "popup","row"
-        //         allowAdding: true,
-        //         allowUpdating: true,    // enables update
-        //          popup: {
-        //                 title: "Edit Office Information",
-        //                 showTitle: true,
-        //                 width: 1100,
-        //                 height: 500,
-        //                 wrapperAttr: {
-        //     class: "custom-edit-popup"
-        //   }
-        //             },
 
-        //                  onPopupShown: function(e) {
-        //       $(".custom-edit-popup .dx-popup-content").css("background-color", "rgba(238, 237, 248, 1)");
-        //     },
-        //                  position: {
-        //             my: "top center",
-        //             at: "bottom center",
-        //             of: "#gridContainer", // grid container ID or class
-        //             offset: "0 10"
-        //         },
-        //                 form: {
-        //                     colCount: 3,
-        //                     items: [
-        //                             "OfficeID", "STATUS", "VisionCode", "AdpWorkCode",
-        // "VisionHeadCount", "AdpHeadCount", "Comments", "Comments1",
-        // "OHPhase", "OHPhase2", "OHPhase3", "OHPhase4",
-        // "RecyclePaper", "RecyclePlastic", "RecycleGlass", "RecycleAluminumCans",
-        // "RecycleCardboard", "RecycleBatteries", "RecycleEWaste", "RecycleCompost",
-        // "WaterData", "EarthDay",
-        // "EnergyThermostats", "EnergyStarAppliances", "EnergyBanSpaceHeaters",
-        // "EnergyCopiersAutoOff", "EnergyLED_Lighting", "EnergyMotionLighting",
-        // "EnergyEV_Chargers", "EnergySolarOnsite", "EnergyDataSource",
-        //  "EstimateElectricUsage", "EstimateGasUsage",
-        // "AddressLine1", "AddressLine2", "AddressLine3",
-        // "City", "StateProvince", "PostalCode", "Country",
-        // "PrimFun", "HtgFuel", "YearBuilt", "NetOfficeSF",
-        //     "ClimateZone", "eGRIDSubregion", "WarehouseSF", "OfficeSF",
-        //     // "LastSurveyDate","LeaseCommenceDate", "LeaseTermDate", "LeaseExpirationDate",
-        //     "Acquisition"
-        //                     ]
-        //                 }
-
-        //     },
             onRowInserting: function (e) {
             e.cancel = true; // prevent default insert
 
@@ -762,9 +548,7 @@
                     const grid = $("#gridContainer").dxDataGrid("instance");
                     if (grid) {
                     grid.cancelEditData();  //  Close popup
-                    //grid.refresh();         //  Refresh data
-                    //$("#gridContainer").dxDataGrid("instance").refresh();
-                    loadOfficeDetails(currentOfficeID);
+
                     console.log("Grid refreshed");
                 } else {
                     console.warn("Grid instance not found.");
@@ -805,336 +589,336 @@
                 }
             });
 
-            function loadOfficeDetails(officeID) {
-                debugger;
-                $.ajax({
-                    url: "/Home/GetOfficeDetails",
-                    method: "POST",
-                    data: { OfficeID: officeID },
-                    success: function (details) {
-                        const grid = $("#gridContainer").dxDataGrid("instance");
+            // function loadOfficeDetails(officeID) {
+            //     debugger;
+            //     $.ajax({
+            //         url: "/Home/GetOfficeDetails",
+            //         method: "POST",
+            //         data: { OfficeID: officeID },
+            //         success: function (details) {
+            //             const grid = $("#gridContainer").dxDataGrid("instance");
 
-                        if (grid) {
-                            // Update existing grid data source
-                            grid.option("dataSource", details);
-                        } else {
-                            // Initialize grid for the first time
-                            $("#gridContainer").dxDataGrid({
-                                dataSource: details,
-                                keyExpr: "OfficeID",
-                                showBorders: true,
-                                searchPanel: { visible: true },
-                                paging: { pageSize: 10 },
-                                     toolbar: {
-                items: [
-                    {
-                        location: "after",
-                        widget: "dxButton",
-                        options: {
-                            text: "+ New",
-                            icon: "add",
-                            type: "default",
-                            stylingMode: "contained",
-                            onClick: function () {
-                                // Trigger add popup
-                                $("#gridContainer").dxDataGrid("instance").addRow();
-                            }
-                        }
-                    }
-                ]
-            },
-                                editing: {
-                                    mode: "popup",
-                                    allowUpdating: true,
-                                    allowAdding: true,
-                                    popup: {
-                                        title: "Edit Office Information",
-                                        showTitle: true,
-                                        width: 1100,
-                                        height: 500,
-                                        wrapperAttr: { class: "custom-edit-popup" }
-                                    },
-                                    form: {
-                                        colCount: 3,
-                                        items: [
-                                            "OfficeID", "STATUS", "VisionCode", "AdpWorkCode",
-                                            "VisionHeadCount", "AdpHeadCount", "Comments", "Comments1",
-                                            "OHPhase", "OHPhase2", "OHPhase3", "OHPhase4",
-                                            "RecyclePaper", "RecyclePlastic", "RecycleGlass", "RecycleAluminumCans",
-                                            "RecycleCardboard", "RecycleBatteries", "RecycleEWaste", "RecycleCompost",
-                                            "WaterData", "EarthDay",
-                                            "EnergyThermostats", "EnergyStarAppliances", "EnergyBanSpaceHeaters",
-                                            "EnergyCopiersAutoOff", "EnergyLED_Lighting", "EnergyMotionLighting",
-                                            "EnergyEV_Chargers", "EnergySolarOnsite", "EnergyDataSource",
-                                            "EstimateElectricUsage", "EstimateGasUsage",
-                                            "AddressLine1", "AddressLine2", "AddressLine3",
-                                            "City", "StateProvince", "PostalCode", "Country",
-                                            "PrimFun", "HtgFuel", "YearBuilt", "NetOfficeSF",
-                                            "ClimateZone", "eGRIDSubregion", "WarehouseSF", "OfficeSF",
-                                            "Acquisition"
-                                        ]
-                                    }
-                                },
-                                columns: [
-                                    {
-                                        type: "buttons",
-                                        buttons: ["edit", "delete"],
-                                        visibleIndex: 0
-                                    },
-                                    { dataField: "OfficeID", caption: "OfficeID", allowEditing: true,width:70 },
+            //             if (grid) {
+            //                 // Update existing grid data source
+            //                 grid.option("dataSource", details);
+            //             } else {
+            //                 // Initialize grid for the first time
+            //                 $("#gridContainer").dxDataGrid({
+            //                     dataSource: details,
+            //                     keyExpr: "OfficeID",
+            //                     showBorders: true,
+            //                     searchPanel: { visible: true },
+            //                     paging: { pageSize: 10 },
+            //                          toolbar: {
+            //     items: [
+            //         {
+            //             location: "after",
+            //             widget: "dxButton",
+            //             options: {
+            //                 text: "+ New",
+            //                 icon: "add",
+            //                 type: "default",
+            //                 stylingMode: "contained",
+            //                 onClick: function () {
+            //                     // Trigger add popup
+            //                     $("#gridContainer").dxDataGrid("instance").addRow();
+            //                 }
+            //             }
+            //         }
+            //     ]
+            // },
+            //                     editing: {
+            //                         mode: "popup",
+            //                         allowUpdating: true,
+            //                         allowAdding: true,
+            //                         popup: {
+            //                             title: "Edit Office Information",
+            //                             showTitle: true,
+            //                             width: 1100,
+            //                             height: 500,
+            //                             wrapperAttr: { class: "custom-edit-popup" }
+            //                         },
+            //                         form: {
+            //                             colCount: 3,
+            //                             items: [
+            //                                 "OfficeID", "STATUS", "VisionCode", "AdpWorkCode",
+            //                                 "VisionHeadCount", "AdpHeadCount", "Comments", "Comments1",
+            //                                 "OHPhase", "OHPhase2", "OHPhase3", "OHPhase4",
+            //                                 "RecyclePaper", "RecyclePlastic", "RecycleGlass", "RecycleAluminumCans",
+            //                                 "RecycleCardboard", "RecycleBatteries", "RecycleEWaste", "RecycleCompost",
+            //                                 "WaterData", "EarthDay",
+            //                                 "EnergyThermostats", "EnergyStarAppliances", "EnergyBanSpaceHeaters",
+            //                                 "EnergyCopiersAutoOff", "EnergyLED_Lighting", "EnergyMotionLighting",
+            //                                 "EnergyEV_Chargers", "EnergySolarOnsite", "EnergyDataSource",
+            //                                 "EstimateElectricUsage", "EstimateGasUsage",
+            //                                 "AddressLine1", "AddressLine2", "AddressLine3",
+            //                                 "City", "StateProvince", "PostalCode", "Country",
+            //                                 "PrimFun", "HtgFuel", "YearBuilt", "NetOfficeSF",
+            //                                 "ClimateZone", "eGRIDSubregion", "WarehouseSF", "OfficeSF",
+            //                                 "Acquisition"
+            //                             ]
+            //                         }
+            //                     },
+            //                     columns: [
+            //                         {
+            //                             type: "buttons",
+            //                             buttons: ["edit", "delete"],
+            //                             visibleIndex: 0
+            //                         },
+            //                         { dataField: "OfficeID", caption: "OfficeID", allowEditing: true,width:70 },
 
-            { dataField: "OHPhase", caption: "OH Phase",width:70 },
-            { dataField: "OHPhase2", caption: "OH Phase 2",width:70 },
-            { dataField: "OHPhase3", caption: "OH Phase 3",width:70, visible: false },
-            { dataField: "OHPhase4", caption: "OH Phase 4",width:70, visible: false },
+            // { dataField: "OHPhase", caption: "OH Phase",width:70 },
+            // { dataField: "OHPhase2", caption: "OH Phase 2",width:70 },
+            // { dataField: "OHPhase3", caption: "OH Phase 3",width:70, visible: false },
+            // { dataField: "OHPhase4", caption: "OH Phase 4",width:70, visible: false },
 
 
-             { dataField: "VisionCode", caption: "Vision Code",width:70 },
-            { dataField: "ADPWorkCode", caption: "ADP Work Code",width:70 },
-            { dataField: "VisionHeadCount", caption: "Vision HC", dataType: "number",width:70 , visible: false},
-            { dataField: "AdpHeadCount", caption: "ADP HC", dataType: "number",width:70, visible: false },
+            //  { dataField: "VisionCode", caption: "Vision Code",width:70 },
+            // { dataField: "ADPWorkCode", caption: "ADP Work Code",width:70 },
+            // { dataField: "VisionHeadCount", caption: "Vision HC", dataType: "number",width:70 , visible: false},
+            // { dataField: "AdpHeadCount", caption: "ADP HC", dataType: "number",width:70, visible: false },
 
-             { dataField: "Comments", caption: "Comments",width:70, visible: false },
-             { dataField: "RecyclePlastic", caption: "Recycle Plastic",width:70, visible: false
-                    , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                    },
-            { dataField: "RecycleGlass", caption: "Recycle Glass",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "RecycleAluminumCans", caption: "Recycle Cans",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "RecycleCardboard", caption: "Recycle Cardboard",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "RecycleBatteries", caption: "Recycle Batteries" ,width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "RecycleEWaste", caption: "Recycle E-Waste",width:70, visible: false
-                                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "RecycleCompost", caption: "Recycle Compost",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
+            //  { dataField: "Comments", caption: "Comments",width:70, visible: false },
+            //  { dataField: "RecyclePlastic", caption: "Recycle Plastic",width:70, visible: false
+            //         , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //         },
+            // { dataField: "RecycleGlass", caption: "Recycle Glass",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "RecycleAluminumCans", caption: "Recycle Cans",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "RecycleCardboard", caption: "Recycle Cardboard",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "RecycleBatteries", caption: "Recycle Batteries" ,width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "RecycleEWaste", caption: "Recycle E-Waste",width:70, visible: false
+            //                     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "RecycleCompost", caption: "Recycle Compost",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
 
-            { dataField: "WaterData", caption: "Water Data",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EarthDay", caption: "Earth Day",width:70, visible: false },
+            // { dataField: "WaterData", caption: "Water Data",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "EarthDay", caption: "Earth Day",width:70, visible: false },
 
-            { dataField: "EnergyThermostats", caption: "Energy: Thermostats",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyStarAppliances", caption: "Energy: Star Appliances",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyBanSpaceHeaters", caption: "Energy: Ban Heaters",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyCopiersAutoOff", caption: "Energy: Auto-Off Copiers",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyLED_Lighting", caption: "Energy: LED",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyMotionLighting", caption: "Energy: Motion Lights",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyEV_Chargers", caption: "Energy: EV Chargers",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergySolarOnsite", caption: "Energy: Solar Onsite",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
+            // { dataField: "EnergyThermostats", caption: "Energy: Thermostats",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "EnergyStarAppliances", caption: "Energy: Star Appliances",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "EnergyBanSpaceHeaters", caption: "Energy: Ban Heaters",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "EnergyCopiersAutoOff", caption: "Energy: Auto-Off Copiers",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "EnergyLED_Lighting", caption: "Energy: LED",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "EnergyMotionLighting", caption: "Energy: Motion Lights",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "EnergyEV_Chargers", caption: "Energy: EV Chargers",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "EnergySolarOnsite", caption: "Energy: Solar Onsite",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
 
-            // { dataField: "LastSurveyDate", caption: "Last Survey Date",width:70 },
+            // // { dataField: "LastSurveyDate", caption: "Last Survey Date",width:70 },
 
-            { dataField: "AddressLine1", caption: "Address Line 1",width:70 },
-            { dataField: "AddressLine2", caption: "Address Line 2",width:70, visible: false },
-            { dataField: "AddressLine3", caption: "Address Line 3",width:70, visible: false },
-            { dataField: "City", caption: "City",width:70 },
-            { dataField: "StateProvince", caption: "State/Province",width:70 },
-            { dataField: "PostalCode", caption: "Postal Code",width:70 },
-            { dataField: "Country", caption: "Country",width:70 },
+            // { dataField: "AddressLine1", caption: "Address Line 1",width:70 },
+            // { dataField: "AddressLine2", caption: "Address Line 2",width:70, visible: false },
+            // { dataField: "AddressLine3", caption: "Address Line 3",width:70, visible: false },
+            // { dataField: "City", caption: "City",width:70 },
+            // { dataField: "StateProvince", caption: "State/Province",width:70 },
+            // { dataField: "PostalCode", caption: "Postal Code",width:70 },
+            // { dataField: "Country", caption: "Country",width:70 },
 
-            { dataField: "STATUS", caption: "STATUS",width:70 },
-            { dataField: "PrimFun", caption: "Primary Function",width:70 },
-            { dataField: "HtgFuel", caption: "Heating Fuel",width:70, visible: false },
+            // { dataField: "STATUS", caption: "STATUS",width:70 },
+            // { dataField: "PrimFun", caption: "Primary Function",width:70 },
+            // { dataField: "HtgFuel", caption: "Heating Fuel",width:70, visible: false },
 
-            { dataField: "YearBuilt", caption: "Year Built", dataType: "number",width:70 , visible: false},
-            { dataField: "NetOfficeSF", caption: "Net Office SF", dataType: "number",width:70 },
-            { dataField: "ClimateZone", caption: "Climate Zone",width:70 },
-            { dataField: "eGRIDSubregion", caption: "EGRID Subregion",width:70, visible: false },
-            { dataField: "WarehouseSF", caption: "Warehouse SF", dataType: "number",width:70 },
-            { dataField: "OfficeSF", caption: "Office SF", dataType: "number",width:70 },
+            // { dataField: "YearBuilt", caption: "Year Built", dataType: "number",width:70 , visible: false},
+            // { dataField: "NetOfficeSF", caption: "Net Office SF", dataType: "number",width:70 },
+            // { dataField: "ClimateZone", caption: "Climate Zone",width:70 },
+            // { dataField: "eGRIDSubregion", caption: "EGRID Subregion",width:70, visible: false },
+            // { dataField: "WarehouseSF", caption: "Warehouse SF", dataType: "number",width:70 },
+            // { dataField: "OfficeSF", caption: "Office SF", dataType: "number",width:70 },
 
-            // { dataField: "LeaseCommenceDate", caption: "Lease Start", dataType: "date",width:70 },
-            // { dataField: "LeaseTermDate", caption: "Lease Term", dataType: "date",width:70 },
-            // { dataField: "LeaseExpirationDate", caption: "Lease End", dataType: "date",width:70 },
+            // // { dataField: "LeaseCommenceDate", caption: "Lease Start", dataType: "date",width:70 },
+            // // { dataField: "LeaseTermDate", caption: "Lease Term", dataType: "date",width:70 },
+            // // { dataField: "LeaseExpirationDate", caption: "Lease End", dataType: "date",width:70 },
 
-            { dataField: "Acquisition", caption: "Acquisition Type",width:70, visible: false },
-            { dataField: "Comments1", caption: "Additional Comments",width:70, visible: false },
-            { dataField: "EstimateElectricUsage", caption: "Electric Usage Estimate",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EstimateGasUsage", caption: "Gas Usage Estimate",width:70, visible: false
-                , cellTemplate: function(container, options) {
-                    const value = options.value === "True"; // convert string to boolean
-                    $("<div>").dxCheckBox({
-                        value: value,
-                        readOnly: true // prevent editing here
-                    }).appendTo(container);
-                }
-                },
-            { dataField: "EnergyDataSource", caption: "Energy Data Source",width:70 }
-                                ],
-                                onRowUpdating: function (e) {
-                                    e.cancel = true; // prevent default update
+            // { dataField: "Acquisition", caption: "Acquisition Type",width:70, visible: false },
+            // { dataField: "Comments1", caption: "Additional Comments",width:70, visible: false },
+            // { dataField: "EstimateElectricUsage", caption: "Electric Usage Estimate",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "EstimateGasUsage", caption: "Gas Usage Estimate",width:70, visible: false
+            //     , cellTemplate: function(container, options) {
+            //         const value = options.value === "True"; // convert string to boolean
+            //         $("<div>").dxCheckBox({
+            //             value: value,
+            //             readOnly: true // prevent editing here
+            //         }).appendTo(container);
+            //     }
+            //     },
+            // { dataField: "EnergyDataSource", caption: "Energy Data Source",width:70 }
+            //                     ],
+            //                     onRowUpdating: function (e) {
+            //                         e.cancel = true; // prevent default update
 
-                                    $.ajax({
-                                        url: '/Home/UpdateOfficeDetails',
-                                        method: 'POST',
-                                        data: {
-                                            key: e.key,
-                                            values: JSON.stringify(e.newData)
-                                        },
-                                        success: function () {
-                                            DevExpress.ui.notify("Updated successfully", "success", 2000);
-                                            // Reload grid data after update
-                                            loadOfficeDetails(currentOfficeID);
-                                        },
-                                        error: function () {
-                                            DevExpress.ui.notify("Update failed", "error", 2000);
-                                        }
-                                    });
-                                },
-                                onRowInserting: function (e) {
-                                    e.cancel = true;
-                                    $.ajax({
-                                        url: "/Home/InsertOfficeDetails",
-                                        method: "POST",
-                                        contentType: "application/json",
-                                        data: JSON.stringify(e.data),
-                                        success: function () {
-                                            DevExpress.ui.notify("Record inserted successfully", "success", 2000);
-                                            loadOfficeDetails(currentOfficeID);
-                                        },
-                                        error: function (xhr) {
-                                            console.error("Insert failed:", xhr.responseText);
-                                            DevExpress.ui.notify("Insert failed", "error", 2000);
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    },
-                    error: function () {
-                        console.error("Error loading office details");
-                    }
-                });
-            }
+            //                         $.ajax({
+            //                             url: '/Home/UpdateOfficeDetails',
+            //                             method: 'POST',
+            //                             data: {
+            //                                 key: e.key,
+            //                                 values: JSON.stringify(e.newData)
+            //                             },
+            //                             success: function () {
+            //                                 DevExpress.ui.notify("Updated successfully", "success", 2000);
+            //                                 // Reload grid data after update
+            //                                 //loadOfficeDetails(currentOfficeID);
+            //                             },
+            //                             error: function () {
+            //                                 DevExpress.ui.notify("Update failed", "error", 2000);
+            //                             }
+            //                         });
+            //                     },
+            //                     onRowInserting: function (e) {
+            //                         e.cancel = true;
+            //                         $.ajax({
+            //                             url: "/Home/InsertOfficeDetails",
+            //                             method: "POST",
+            //                             contentType: "application/json",
+            //                             data: JSON.stringify(e.data),
+            //                             success: function () {
+            //                                 DevExpress.ui.notify("Record inserted successfully", "success", 2000);
+            //                                 //loadOfficeDetails(currentOfficeID);
+            //                             },
+            //                             error: function (xhr) {
+            //                                 console.error("Insert failed:", xhr.responseText);
+            //                                 DevExpress.ui.notify("Insert failed", "error", 2000);
+            //                             }
+            //                         });
+            //                     }
+            //                 });
+            //             }
+            //         },
+            //         error: function () {
+            //             console.error("Error loading office details");
+            //         }
+            //     });
+            // }
         },
 
             // Function to load and (re)bind the grid with fresh data
@@ -1168,8 +952,11 @@
             background-color: RGBA(238, 237, 248, 1);
         }
 
+        /* .dx-device-generic {
+                    background-color: RGBA(238, 237, 248, 1);
+                } */
         .dx-device-generic {
-            background-color: RGBA(238, 237, 248, 1);
+            background-color: black;
         }
 
         .dx-toolbar-items-container {

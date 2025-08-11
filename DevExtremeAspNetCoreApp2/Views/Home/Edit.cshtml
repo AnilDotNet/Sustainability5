@@ -49,7 +49,7 @@
 
 <!-- DevExtreme JS -->
 @* <script src="https://cdn3.devexpress.com/jslib/22.2.15/js/dx.all.js"></script> *@
-<script src="~/js/devextreme/dx.all.js"></script>
+    <script src="~/js/devextreme/dx.all.js" defer></script>
 
 
 
@@ -402,6 +402,9 @@
 
 
     <style>
+        .dx-device-generic {
+            background-color: black;
+        }
         .dx-list-item-content {
             font-size: x-small !important;
         }

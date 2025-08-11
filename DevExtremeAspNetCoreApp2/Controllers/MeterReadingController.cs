@@ -82,5 +82,28 @@ namespace DevExtremeAspNetCoreApp2.Controllers
 
             return Ok(countries);
         }
+
+        [HttpPost]
+        public IActionResult GetMeterReadingInfo(string OfficeID)
+        {
+            var data = new List<Dictionary<string, object>>();
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlCommand cmd = new SqlCommand("SELECT * FROM vw_utilitymeterreadinginfo where OfficeID=@OfficeID order by StartDate desc", conn))
+            {
+                cmd.Parameters.AddWithValue("@OfficeID", OfficeID);
+                conn.Open();
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    var row = Enumerable.Range(0, reader.FieldCount)
+                        .ToDictionary(reader.GetName, reader.GetValue);
+                    data.Add(row);
+                }
+            }
+
+            return Ok(data);
+        }
     }
 }
